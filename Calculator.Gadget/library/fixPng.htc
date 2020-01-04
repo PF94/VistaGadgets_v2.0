@@ -1,0 +1,54 @@
+<!--
+//---------------------------------------------
+//  THIS CODE IS NOT APPROVED FOR USE IN/ON ANY OTHER UI ELEMENT OR PRODUCT COMPONENT.  
+//  Copyright (c) 2006 Microsoft Corporation.  All rights reserved.
+// ----------------------------------------------
+-->
+<public:component>
+<public:attach event="onpropertychange" onevent="checkImgSrc()" />
+
+<script>
+var blankImg="images/fixPng.gif";
+var pattern=/\.png$/i;
+var needFix=/MSIE (5\.5|6\.)/.test(navigator.userAgent)
+
+//to mange the loading of the document
+if(needFix) firstRun();
+
+function checkImgSrc()
+{
+    if(needFix)
+    {
+		//first you would want to check that the property changing is the src
+		if(event.propertyName=="src")
+	   {
+	        if(pattern.test(src))
+	            applyFilter();
+	    }
+	    else return;//nothing to do
+    }
+    else return;
+}
+
+function applyFilter()
+{
+    var mySrc=src;//backup the orginal src
+    src=blankImg;//change to the blank
+    //remove any old filter that could have existed
+    style.filter=style.filter.replace(/progid:DXImageTransform\.Microsoft\.AlphaImageLoader\((.)+\)/gi,"");   
+    //apply the new filter to what we have before
+    style.filter=style.filter+"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + mySrc + "',sizingMethod='scale')";
+}
+
+//this function is only called the first time when the document is loading
+function firstRun()
+{
+   if(element.src)
+   { 	 
+        if(pattern.test(element.src))
+            applyFilter();
+   }
+}
+
+</script>
+</public:component>
